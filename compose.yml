@@ -1,0 +1,120 @@
+services:
+  transmission:
+    image: lscr.io/linuxserver/transmission:latest
+    container_name: transmission
+    environment:
+      - PUID=1000
+      - PGID=1000
+      - TZ=Etc/UTC
+      - TRANSMISSION_WEB_HOME= #optional
+      - USER= #optional
+      - PASS= #optional
+      - WHITELIST= #optional
+      - PEERPORT= #optional
+      - HOST_WHITELIST= #optional
+    volumes:
+      - /volume1/appdata/transmission/data:/config
+      - /volume2/media/tr/downloads:/downloads
+    ports:
+      - 9091:9091
+      - 51413:51413
+      - 51413:51413/udp
+    restart: unless-stopped 
+ 
+  pms-docker:
+        container_name: plex
+        ports:
+            - 32400:32400/tcp
+            - 3006:3005/tcp
+            - 8325:8324/tcp
+            - 32470:32469/tcp
+            - 1901:1900/udp
+            - 32411:32410/udp
+            - 32413:32412/udp
+            - 32414:32413/udp
+            - 32415:32414/udp
+        environment:
+            - TZ=Asia/Bangkok
+        volumes:
+            - /volume1/appdata/plex/:/config
+            - /volume2/media:/mnt
+        image: plexinc/pms-docker
+
+  emby:
+        container_name: emby
+        volumes:
+            - /volume1/appdata/emby:/config
+            - /volume2/media:/mnt
+        environment:
+            - UID=1000
+            - GID=1000
+        ports:
+            - 8096:8096
+            - 8920:8920
+        image: ghcr.io/labdiynez/emby:latest
+
+  radarr:
+    image: lscr.io/linuxserver/radarr:latest
+    container_name: radarr
+    environment:
+      - PUID=1000
+      - PGID=1000
+      - TZ=Asia/Bangkok
+    volumes:
+      - /volume1/appdata/radarr/data:/config
+      - /volume2/media:/mnt    
+    ports:
+      - 7878:7878
+    restart: unless-stopped
+
+  sonarr:
+    image: lscr.io/linuxserver/sonarr:latest
+    container_name: sonarr
+    environment:
+      - PUID=1000
+      - PGID=1000
+      - TZ=Asia/Bangkok
+    volumes:
+      - /volume1/appdata/sonarr/data:/config
+      - /volume2/media:/mnt
+    ports:
+      - 8989:8989
+    restart: unless-stopped
+  
+  #app:
+   # container_name: npm
+    #image: 'jc21/nginx-proxy-manager:latest'
+    #restart: unless-stopped
+    #ports:
+      # These ports are in format <host-port>:<container-port>
+      #- '8880:80' # Public HTTP Port
+      #- '8443:8443' # Public HTTPS Port
+      #- '8081:81' # Admin Web Port
+    #volumes:
+      #- /volume1/appdata/npm/data:/data
+      #- /volume1/appdata/npm/letsencrypt:/etc/letsencrypt  
+  
+speedtest-tracker:
+    image: lscr.io/linuxserver/speedtest-tracker:latest
+    container_name: speedtest
+    environment:
+      - PUID=1000
+      - PGID=1000
+      - TZ=Asia/Bangkok
+      - APP_KEY=base64:725CABKBJSQXj5wvSrEs5D+g1xud3keBjm3mSLWwWFI=
+      - DB_CONNECTION=sqlite
+      - SPEEDTEST_SCHEDULE= 0 */1 * * *
+      - SPEEDTEST_SERVERS=
+      - DB_HOST= #optional
+      - DB_PORT= #optional
+      - DB_DATABASE= #optional
+      - DB_USERNAME= #optional
+      - DB_PASSWORD= #optional
+      - DISPLAY_TIMEZONE=Asia/Bangkok #optional
+      - PRUNE_RESULTS_OLDER_THAN=0 #optional
+    volumes:
+      - /volume1/appdata/speedtest/data:/config
+    ports:
+      - 8765:80
+    restart: unless-stopped
+    
